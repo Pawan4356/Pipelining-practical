@@ -6,7 +6,7 @@ import json
 from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_auc_score
 import logging
 import yaml
-# from dvclive import Live
+from dvclive import Live
 
 # Ensure the "logs" directory exists
 log_dir = 'logs'
@@ -74,11 +74,11 @@ def load_data(file_path: str) -> pd.DataFrame:
         logger.error('Unexpected error occurred while loading the data: %s', e)
         raise
 
-def evaluate_model(clf, X_test: np.ndarray, y_test: np.ndarray) -> dict:
+def evaluate_model(clf, x_test: np.ndarray, y_test: np.ndarray) -> dict:
     """Evaluate the model and return the evaluation metrics."""
     try:
-        y_pred = clf.predict(X_test)
-        y_pred_proba = clf.predict_proba(X_test)[:, 1]
+        y_pred = clf.predict(x_test)
+        y_pred_proba = clf.predict_proba(x_test)[:, 1]
 
         accuracy = accuracy_score(y_test, y_pred)
         precision = precision_score(y_test, y_pred)
@@ -116,18 +116,19 @@ def main():
         clf = load_model('./models/model.pkl')
         test_data = load_data('./data/processed/test_tfidf.csv')
         
-        X_test = test_data.iloc[:, :-1].values
+        x_test = test_data.iloc[:, :-1].values
         y_test = test_data.iloc[:, -1].values
 
-        metrics = evaluate_model(clf, X_test, y_test)
+        metrics = evaluate_model(clf, x_test, y_test)
 
-        # Experiment tracking using dvclive
-        # with Live(save_dvc_exp=True) as live:
-        #     live.log_metric('accuracy', accuracy_score(y_test, y_test))
-        #     live.log_metric('precision', precision_score(y_test, y_test))
-        #     live.log_metric('recall', recall_score(y_test, y_test))
+        # ✅ Correct usage of dvclive with metrics from evaluate_model
+        with Live(save_dvc_exp=True) as live:
+            live.log_metric('accuracy', metrics['accuracy'])
+            live.log_metric('precision', metrics['precision'])
+            live.log_metric('recall', metrics['recall'])
+            live.log_metric('auc', metrics['auc'])
 
-        #     live.log_params(params)
+            live.log_params(params)
         
         save_metrics(metrics, 'reports/metrics.json')
     except Exception as e:

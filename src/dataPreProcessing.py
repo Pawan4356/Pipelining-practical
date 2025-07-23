@@ -16,7 +16,7 @@ log_dir = 'logs'
 os.makedirs(log_dir, exist_ok=True)
 
 # Setting up logger
-logger = logging.getLogger('dataPreProcessing')
+logger = logging.getLogger('dataPreProcessiwng')
 logger.setLevel('DEBUG')
 
 console_handler = logging.StreamHandler()
