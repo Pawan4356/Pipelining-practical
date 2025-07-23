@@ -4,7 +4,6 @@ from sklearn.model_selection import train_test_split
 import logging
 import yaml
 
-
 # Ensure the "logs" directory exists
 log_dir = 'logs'
 os.makedirs(log_dir, exist_ok=True)
@@ -86,9 +85,9 @@ def save_data(train_data: pd.DataFrame, test_data: pd.DataFrame, data_path: str)
 
 def main():
     try:
-        # params = load_params(params_path='params.yaml')
-        # test_size = params['dataIngestion']['test_size']
-        test_size = 0.2
+        # test_size = 0.2 -> Hard Coded
+        params = load_params(params_path='params.yaml')
+        test_size = params['dataIngestion']['test_size']
         data_path = 'https://raw.githubusercontent.com/Pawan4356/Dummy-datasets/refs/heads/main/spam.csv'
         df = load_data(data_url=data_path)
         final_df = preprocess_data(df)
